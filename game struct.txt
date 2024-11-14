@@ -1,0 +1,14 @@
+Basic Structure
+Game Setup: Initialize the game and set the canvas size.
+
+Assets Loading: Load all the necessary assets like the spaceship, asteroids, and background.
+
+Game Objects: Create the player spaceship, asteroids, and any other objects needed.
+
+Physics: Apply physics to make sure the asteroids move and the spaceship can shoot.
+
+Input Handling: Capture user input for controlling the spaceship and shooting.
+
+Collisions: Detect collisions between the spaceship and asteroids, and between bullets and asteroids.
+
+Game Loop: Update the game state and render objects continuously.

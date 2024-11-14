@@ -1,0 +1,9 @@
+scoring 
+power-ups
+different asteroid types
+multiplayer/competitive
+game over screen
+start screen
+add sound
+add animations
+add enemies
