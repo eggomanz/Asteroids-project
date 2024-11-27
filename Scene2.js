@@ -16,19 +16,30 @@ class Scene2 extends Phaser.Scene {
     this.ship2 = this.add.sprite(config.width / 2, config.height / 2, "ship2");
     this.ship3 = this.add.sprite(config.width / 2 + 50, config.height / 2, "ship3");
 
+    this.smallasteroid = this.add.sprite(config.width / 2 - 50, config.height / 2, "smallasteroid");
+    this.medasteroid = this.add.sprite(config.width / 2 - 50, config.height / 2, "medasteroid");
+
     this.enemies = this.physics.add.group();
     this.enemies.add(this.ship1);
     this.enemies.add(this.ship2);
     this.enemies.add(this.ship3);
 
+    this.enemies.add(this.smallasteroid);
+    this.enemies.add(this.medasteroid);
 
     this.ship1.play("ship1_anim");
     this.ship2.play("ship2_anim");
     this.ship3.play("ship3_anim");
 
+    this.smallasteroid.play("smallasteroid_anim");
+    this.medasteroid.play("medasteroid_anim");
+
     this.ship1.setInteractive();
     this.ship2.setInteractive();
     this.ship3.setInteractive();
+
+    this.smallasteroid.setInteractive();
+    this.medasteroid.setInteractive();
 
     this.input.on('gameobjectdown', this.destroyShip, this);
 
@@ -59,7 +70,6 @@ class Scene2 extends Phaser.Scene {
     this.player.play("thrust");
     this.cursorKeys = this.input.keyboard.createCursorKeys();
     this.player.setCollideWorldBounds(true);
-
 
 
     this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -107,7 +117,17 @@ class Scene2 extends Phaser.Scene {
   pickPowerUp(player, powerUp) {
     powerUp.disableBody(true, true);
     this.pickupSound.play();
-  }
+ 
+    this.playerSpeedBoost = gameSettings.playerSpeed * 1.5;
+    this.time.addEvent({
+       delay: 5000,  // Duration of power-up effect (e.g., 5 seconds)
+       callback: () => {
+          this.playerSpeedBoost = gameSettings.playerSpeed;
+       },
+       callbackScope: this,
+       loop: false
+    });
+ }
 
   hurtPlayer(player, enemy) {
 
@@ -196,6 +216,8 @@ class Scene2 extends Phaser.Scene {
     // this.ship1.destroy();
     // this.ship2.destroy();
     // this.ship3.destroy();
+    this.moveShip(this.smallasteroid, 1);
+    this.moveShip(this.medasteroid, 2);
 
     this.background.tilePositionY -= 0.5;
 
@@ -222,35 +244,34 @@ class Scene2 extends Phaser.Scene {
 
 
   movePlayerManager() {
-
     this.player.setVelocity(0);
-
+    const playerSpeed = this.playerSpeedBoost || gameSettings.playerSpeed;
+ 
     if (this.cursorKeys.left.isDown) {
-      this.player.setVelocityX(-gameSettings.playerSpeed);
+       this.player.setVelocityX(-playerSpeed);
     } else if (this.cursorKeys.right.isDown) {
-      this.player.setVelocityX(gameSettings.playerSpeed);
+       this.player.setVelocityX(playerSpeed);
     }
-
+ 
     if (this.cursorKeys.up.isDown) {
-      this.player.setVelocityY(-gameSettings.playerSpeed);
+       this.player.setVelocityY(-playerSpeed);
     } else if (this.cursorKeys.down.isDown) {
-      this.player.setVelocityY(gameSettings.playerSpeed);
+       this.player.setVelocityY(playerSpeed);
     }
-  }
-
-
+ }
 
   moveShip(ship, speed) {
     ship.y += speed;
     if (ship.y > config.height) {
       this.resetShipPos(ship);
-    }
-  }
+      }
+}
 
   resetShipPos(ship) {
     ship.y = 0;
     var randomX = Phaser.Math.Between(0, config.width);
     ship.x = randomX;
+  
   }
 
 
