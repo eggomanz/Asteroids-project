@@ -34,6 +34,14 @@ class Scene1 extends Phaser.Scene {
       frameWidth: 16,
       frameHeight: 16
     });
+    this.load.spritesheet("smallasteroid", "assets/spritesheets/smallasteroid.png",{
+      frameWidth: 20,
+      frameHeight: 20
+    });
+    this.load.spritesheet("medasteroid", "assets/spritesheets/medasteroid.png",{
+      frameWidth: 39,
+      frameHeight: 39
+    });
 
     this.load.bitmapFont("pixelFont", "assets/font/font.png", "assets/font/font.xml");
 
@@ -105,6 +113,17 @@ class Scene1 extends Phaser.Scene {
       frameRate: 20,
       repeat: -1
     });
-
+    this.anims.create({
+      key: "smallasteroid_anim",
+      frames: this.anims.generateFrameNumbers("smallasteroid"),
+      frameRate: 1,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "medasteroid_anim",
+      frames: this.anims.generateFrameNumbers("medasteroid"),
+      frameRate: 1,
+      repeat: -1
+    });
   }
 }
