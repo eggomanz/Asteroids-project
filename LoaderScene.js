@@ -4,6 +4,9 @@ class LoaderScene extends Phaser.Scene {
     }
 
 preload(){
+    this.load.image("small-asteroid", "assets/images/meteorGrey_small1.png")
+    this.load.image("med-asteroid", "assets/images/meteorGrey_med1.png")
+    this.load.image("big-asteroid", "assets/images/meteorGrey_big4.png")
     this.load.image("starbackground", "assets/images/starbackground.jpeg");
     //
     this.load.spritesheet("ship", "assets/spritesheets/ship.png",{
