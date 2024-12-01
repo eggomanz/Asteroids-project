@@ -10,8 +10,8 @@ class Beam2 extends Phaser.Physics.Arcade.Sprite {
         this.setActive(true)
         this.setVisible(true)
     
-        this.direction = direction
-        this.rotation = this.direction
+        this.direction = direction - Math.PI / 2
+        this.rotation = this.direction + Math.PI / 2
     }
 
     update(time, delta) {

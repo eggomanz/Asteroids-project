@@ -8,6 +8,20 @@ class TwoPlayerScene extends Phaser.Scene {
 
     create() {
 
+        this.music = this.sound.add("music");
+        
+        var musicConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: true,
+            delay: 0
+        }
+        
+        this.music.play(musicConfig);
+
         this.player1Score = 0
         this.player2Score = 0
 
@@ -65,6 +79,14 @@ class TwoPlayerScene extends Phaser.Scene {
 
         this.player1ScoreText = this.add.bitmapText(10, 5, "pixelFont", "PLAYER1 SCORE: 0000", 16);
         this.player2ScoreText = this.add.bitmapText(10, 20, "pixelFont", "PLAYER1 SCORE: 0000", 16);
+
+        this.anims.create({
+            key: "explode",
+            frames: this.anims.generateFrameNumbers("explosion"),
+            frameRate: 20,
+            repeat: 0,
+            hideOnComplete: true
+          });
     }
 
     update(time, delta) {
@@ -147,6 +169,8 @@ class TwoPlayerScene extends Phaser.Scene {
         beam.destroy()
         asteriod.destroy()
         this.player1Score += 15
+
+        new Explosion(this, asteriod.x, asteriod.y); 
         this.sound.play("audio_explosion")
 
         if(this.asteriodGroup.countActive() == 0) {
@@ -158,6 +182,8 @@ class TwoPlayerScene extends Phaser.Scene {
         beam.destroy()
         asteriod.destroy()
         this.player2Score += 15
+
+        new Explosion(this, asteriod.x, asteriod.y); 
         this.sound.play("audio_explosion")
 
         if(this.asteriodGroup.countActive() == 0) {
