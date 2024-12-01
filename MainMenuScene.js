@@ -24,6 +24,20 @@ class MainMenuScene extends Phaser.Scene {
     const instructionText2 = this.add.bitmapText(width / 2, height / 2 + 40, 'pixelFont', 'Press ENTER for 2 Player Mode', 20)
     .setOrigin(0.5);
 
+    this.music = this.sound.add("music");
+        
+    var musicConfig = {
+      mute: false,
+      volume: 1,
+      rate: 1,
+      detune: 0,
+      seek: 0,
+      loop: true,
+      delay: 0
+    }
+    
+    this.music.play(musicConfig);
+
     // Define keys
     this.keys = this.input.keyboard.addKeys({
       space: Phaser.Input.Keyboard.KeyCodes.SPACE,

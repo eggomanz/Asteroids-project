@@ -62,6 +62,13 @@ class TwoPlayerScene extends Phaser.Scene {
             this.asteriodArray.push(asteriod)
         }
 
+        this.anims.create({
+            key: "beam_anim",
+            frames: this.anims.generateFrameNumbers("beam"),
+            frameRate: 20,
+            repeat: -1
+          });
+
         this.player1BeamGroup = this.physics.add.group({
             classType: Beam2,
             maxSize: 1,
@@ -134,7 +141,7 @@ class TwoPlayerScene extends Phaser.Scene {
             }
         }
 
-        //update scores 
+        // Update scores 
         this.player1ScoreText.setText("PLAYER1 SCORE: " + this.player1Score)
         this.player2ScoreText.setText("PLAYER2 SCORE: " + this.player2Score)
 
@@ -156,12 +163,10 @@ class TwoPlayerScene extends Phaser.Scene {
     addThrust(player) {
         const angle = player.rotation - Math.PI / 2; // Convert angle to radians
 
-        // Calculate velocity components
         const thrust = 5; 
         const velocityX = Math.cos(angle) * thrust;
         const velocityY = Math.sin(angle) * thrust;
 
-        // Apply the velocity to the player
         player.setVelocity(player.body.velocity.x + velocityX, player.body.velocity.y + velocityY);
     }
 
