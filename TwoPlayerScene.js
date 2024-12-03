@@ -4,10 +4,14 @@ class TwoPlayerScene extends Phaser.Scene {
     }
 
     preload() {
+        this.load.audio("audio_pickup", ["assets/sounds/pickup.ogg", "assets/sounds/pickup.mp3"]);
     }
 
     create() {
 
+        this.background = this.add.tileSprite(0, 0, config.width, config.height, "starbackground");
+        this.background.setOrigin(0, 0);
+        this.pickupSound = this.sound.add("audio_pickup");
         this.music = this.sound.add("music");
         
         var musicConfig = {
@@ -22,6 +26,25 @@ class TwoPlayerScene extends Phaser.Scene {
         
         this.music.play(musicConfig);
 
+        this.powerUps = this.physics.add.group();
+
+
+        for (var i = 0; i < gameSettings.maxPowerups; i++) {
+          var powerUp = this.physics.add.sprite(16, 16, "power-up");
+          this.powerUps.add(powerUp);
+          powerUp.setRandomPosition(0, 0, game.config.width, game.config.height);
+    
+          if (Math.random() > 0.5) {
+            powerUp.play("red");
+          } else {
+            powerUp.play("gray");
+          }
+    
+          powerUp.setVelocity(gameSettings.powerUpVel, gameSettings.powerUpVel);
+          powerUp.setCollideWorldBounds(true);
+          powerUp.setBounce(1);
+    
+        }
         this.player1Score = 0
         this.player2Score = 0
 
@@ -81,6 +104,16 @@ class TwoPlayerScene extends Phaser.Scene {
             runChildUpdate: true
         })
 
+        this.physics.add.collider(this.player1BeamGroup, this.powerUps, function(projectile, powerUp) {
+            projectile.destroy();
+          });
+        this.physics.add.collider(this.player2BeamGroup, this.powerUps, function(projectile, powerUp) {
+            projectile.destroy();
+          });
+      
+        this.physics.add.overlap(this.player1, this.powerUps, this.pickPowerUp, null, this);
+        this.physics.add.overlap(this.player2, this.powerUps, this.pickPowerUp, null, this);
+
         this.physics.add.overlap(this.player1BeamGroup, this.asteriodGroup, this.collisionPlayer1, null, this);
         this.physics.add.overlap(this.player2BeamGroup, this.asteriodGroup, this.collisionPlayer2, null, this);
 
@@ -95,8 +128,42 @@ class TwoPlayerScene extends Phaser.Scene {
             hideOnComplete: true
           });
     }
-
+    pickPowerUp(player, powerUp) {
+        console.log('Power-up picked up by', player === this.player1 ? 'Player 1' : 'Player 2');
+    
+        powerUp.disableBody(true, true);
+        console.log('Power-up disabled');
+    
+        this.pickupSound.play();
+    
+        if (player === this.player1) {
+            this.player1SpeedBoost = gameSettings.playerSpeed * 1.5;
+            this.time.addEvent({
+                delay: 5000,
+                callback: () => {
+                    this.player1SpeedBoost = gameSettings.playerSpeed;
+                    console.log('Player 1 speed boost ended');
+                },
+                callbackScope: this,
+                loop: false
+            });
+        } else if (player === this.player2) {
+            this.player2SpeedBoost = gameSettings.playerSpeed * 1.5;
+            this.time.addEvent({
+                delay: 5000,
+                callback: () => {
+                    this.player2SpeedBoost = gameSettings.playerSpeed;
+                    console.log('Player 2 speed boost ended');
+                },
+                callbackScope: this,
+                loop: false
+            });
+        }
+    }
     update(time, delta) {
+        this.background.tilePositionY -= 0.5;
+        const player1Speed = this.player1SpeedBoost || gameSettings.playerSpeed;
+        const player2Speed = this.player2SpeedBoost || gameSettings.playerSpeed;   
         // player1 movements
        if(this.cursors.left.isDown){
             this.player1.setAngularVelocity(-300)
