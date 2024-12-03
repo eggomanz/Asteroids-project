@@ -1,0 +1,8 @@
+single player: 
+up arrow, left arrow, right arrow, space to shoot
+
+two player
+player one:
+up arrow, left arrow, right arrow, space to shoot
+player two:
+W for up, A left, D right, Z to shoot
