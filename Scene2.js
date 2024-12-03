@@ -6,20 +6,27 @@ class Scene2 extends Phaser.Scene {
     super("playGame");
 
   }
+  preload() {
+    this.load.image("small-asteroid", "assets/images/meteorGrey_small1.png")
+    this.load.image("med-asteroid", "assets/images/meteorGrey_med1.png")
+    this.load.image("big-asteroid", "assets/images/meteorGrey_big4.png")
+}
 
   create() {
 
     this.background = this.add.tileSprite(0, 0, config.width, config.height, "starbackground");
     this.background.setOrigin(0, 0);
-
+/*
     this.ship1 = this.add.sprite(config.width / 2 - 50, config.height / 2, "ship");
     this.ship2 = this.add.sprite(config.width / 2, config.height / 2, "ship2");
     this.ship3 = this.add.sprite(config.width / 2 + 50, config.height / 2, "ship3");
 
     this.smallasteroid = this.add.sprite(config.width / 2 - 50, config.height / 2, "smallasteroid");
     this.medasteroid = this.add.sprite(config.width / 2 - 50, config.height / 2, "medasteroid");
-
+*/
     this.enemies = this.physics.add.group();
+    this.spawnEnemies();
+    /*
     this.enemies.add(this.ship1);
     this.enemies.add(this.ship2);
     this.enemies.add(this.ship3);
@@ -40,7 +47,7 @@ class Scene2 extends Phaser.Scene {
 
     this.smallasteroid.setInteractive();
     this.medasteroid.setInteractive();
-
+*/
     this.input.on('gameobjectdown', this.destroyShip, this);
 
     this.physics.world.setBoundsCollision();
@@ -64,17 +71,41 @@ class Scene2 extends Phaser.Scene {
       powerUp.setBounce(1);
 
     }
+    /*
+   //generate our asteriods
+   this.asteriodGroup = this.physics.add.group()
+   this.asteriodArray = []
+
+   for (let i = 0; i < 15; i++) {
+       const asteriod = new Asteroid(this, 300, 300)
+
+       const xPos = Phaser.Math.RND.between(0, 800)
+       const yPos = Phaser.Math.RND.between(0, 600)
+       asteriod.setPosition(xPos, yPos)
+       asteriod.setActive(true)
+       asteriod.setVisible(true)
+
+       this.asteriodGroup.add(asteriod, true)
+       this.asteriodArray.push(asteriod)
+   }*/
+   this.projectiles = this.physics.add.group({
+       classType: Beam2,
+       maxSize: 1,
+       runChildUpdate: true
+   })
 
 
     this.player = this.physics.add.sprite(config.width / 2 - 8, config.height - 64, "player");
     this.player.play("thrust");
     this.cursorKeys = this.input.keyboard.createCursorKeys();
+    this.player.setDrag(2)
+    this.player.setMaxVelocity(3000)
     this.player.setCollideWorldBounds(true);
 
 
     this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    this.projectiles = this.add.group();
+    //this.projectiles = this.add.group();
 
     this.physics.add.collider(this.projectiles, this.powerUps, function(projectile, powerUp) {
       projectile.destroy();
@@ -85,6 +116,7 @@ class Scene2 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemies, this.hurtPlayer, null, this);
 
     this.physics.add.overlap(this.projectiles, this.enemies, this.hitEnemy, null, this);
+    //this.physics.add.overlap(this.projectiles, this.asteriodGroup, this.collisionPlayer1, null, this);
 
     var graphics = this.add.graphics();
     graphics.fillStyle("Black");
@@ -113,7 +145,37 @@ class Scene2 extends Phaser.Scene {
     this.music.play(musicConfig);
 
   }
-
+    spawnEnemies() {
+      for (var i = 0; i < Phaser.Math.Between(3, 30); i++) {
+        var randomDirection = Phaser.Math.Between(0, 3);
+        var x, y;
+        switch (randomDirection) {
+          case 0: // spawn from the top
+            x = Phaser.Math.Between(0, config.width);
+            y = 0;
+            break;
+          case 1: // spawn from the bottom
+            x = Phaser.Math.Between(0, config.width);
+            y = config.height;
+            break;
+          case 2: // spawn from the left
+            x = 0;
+            y = Phaser.Math.Between(0, config.height);
+            break;
+          case 3: // spawn from the right
+            x = config.width;
+            y = Phaser.Math.Between(0, config.height);
+            break;
+        }
+        var asteroidType = Phaser.Math.RND.pick(["small-asteroid", "med-asteroid", "big-asteroid"]);
+        var asteroid = this.physics.add.sprite(x, y, asteroidType);
+        this.enemies.add(asteroid);
+        asteroid.setInteractive();
+        asteroid.setVelocity(Phaser.Math.Between(-100, 100), Phaser.Math.Between(-100, 100));
+        asteroid.setCollideWorldBounds(true);
+        asteroid.setBounce(1);
+      }
+    }
   pickPowerUp(player, powerUp) {
     powerUp.disableBody(true, true);
     this.pickupSound.play();
@@ -209,7 +271,7 @@ class Scene2 extends Phaser.Scene {
 
 
 
-    this.moveShip(this.ship1, 1);
+    /*this.moveShip(this.ship1, 1);
     this.moveShip(this.ship2, 2);
     this.moveShip(this.ship3, 3);
     // for testing purpouses
@@ -217,7 +279,7 @@ class Scene2 extends Phaser.Scene {
     // this.ship2.destroy();
     // this.ship3.destroy();
     this.moveShip(this.smallasteroid, 1);
-    this.moveShip(this.medasteroid, 2);
+    this.moveShip(this.medasteroid, 2);*/
 
     this.background.tilePositionY -= 0.5;
 
@@ -225,14 +287,12 @@ class Scene2 extends Phaser.Scene {
     this.movePlayerManager();
 
     if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
-      if(this.player.active){
-          this.shootBeam();
-      }
-    }
-    for (var i = 0; i < this.projectiles.getChildren().length; i++) {
-      var beam = this.projectiles.getChildren()[i];
-      beam.update();
-    }
+      const shoot = this.projectiles.get()
+            if (shoot) {
+                shoot.fire(this.player.x, this.player.y, this.player.rotation)
+                this.sound.play("audio_beam")
+            }
+        }
 
 
   }
@@ -241,24 +301,30 @@ class Scene2 extends Phaser.Scene {
       var beam = new Beam(this);
       this.beamSound.play();
   }
-
-
   movePlayerManager() {
     this.player.setVelocity(0);
+    this.player.setAngularVelocity(0); // Reset angular velocity
     const playerSpeed = this.playerSpeedBoost || gameSettings.playerSpeed;
- 
+  
     if (this.cursorKeys.left.isDown) {
-       this.player.setVelocityX(-playerSpeed);
+      this.player.setVelocityX(-playerSpeed);
+      this.player.setAngularVelocity(-200); // Adjust this value as needed
     } else if (this.cursorKeys.right.isDown) {
-       this.player.setVelocityX(playerSpeed);
+      this.player.setVelocityX(playerSpeed);
+      this.player.setAngularVelocity(200); // Adjust this value as needed
     }
- 
+  
     if (this.cursorKeys.up.isDown) {
-       this.player.setVelocityY(-playerSpeed);
+      this.player.setVelocityY(-playerSpeed);
     } else if (this.cursorKeys.down.isDown) {
-       this.player.setVelocityY(playerSpeed);
+      this.player.setVelocityY(playerSpeed);
     }
- }
+  
+    // Add this to make the player face the direction of movement
+    if (this.player.body.velocity.length() > 0) {
+      this.player.rotation = Math.atan2(this.player.body.velocity.y, this.player.body.velocity.x) + Math.PI/2;
+    }
+  }
 
   moveShip(ship, speed) {
     ship.y += speed;
