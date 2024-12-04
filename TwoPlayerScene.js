@@ -48,18 +48,18 @@ class TwoPlayerScene extends Phaser.Scene {
         this.player1Score = 0
         this.player2Score = 0
 
-        this.player1 = this.physics.add.image(200, 200, "player")
-        this.player1.setDrag(10)
-        this.player1.setMaxVelocity(150)
-        this.player1.setCollideWorldBounds(true)
+        this.player1 = this.physics.add.image(200, 200, "player");
+        this.player1.setDrag(10);
+        this.player1.setMaxVelocity(150);
+        this.player1.setCollideWorldBounds(true);
 
-        this.player2 = this.physics.add.image(250, 250, "player")
-        this.player2.setDrag(10)
-        this.player2.setMaxVelocity(150)
-        this.player2.setCollideWorldBounds(true)
+        this.player2 = this.physics.add.image(250, 250, "player");
+        this.player2.setDrag(10);
+        this.player2.setMaxVelocity(150);
+        this.player2.setCollideWorldBounds(true);
 
 
-        this.cursors = this.input.keyboard.createCursorKeys()
+        this.cursors = this.input.keyboard.createCursorKeys();
 
         this.keys = this.input.keyboard.addKeys({
             A: Phaser.Input.Keyboard.KeyCodes.A,
@@ -69,20 +69,20 @@ class TwoPlayerScene extends Phaser.Scene {
         });
 
         //generate our asteriods
-        this.asteriodGroup = this.physics.add.group()
+        this.asteriodGroup = this.physics.add.group();
         this.asteriodArray = []
 
         for (let i = 0; i < 15; i++) {
-            const asteriod = new Asteroid(this, 300, 300)
+            const asteriod = new Asteroid(this, 300, 300);
 
-            const xPos = Phaser.Math.RND.between(0, 800)
-            const yPos = Phaser.Math.RND.between(0, 600)
-            asteriod.setPosition(xPos, yPos)
-            asteriod.setActive(true)
-            asteriod.setVisible(true)
+            const xPos = Phaser.Math.RND.between(0, 800);
+            const yPos = Phaser.Math.RND.between(0, 600);
+            asteriod.setPosition(xPos, yPos);
+            asteriod.setActive(true);
+            asteriod.setVisible(true);
 
-            this.asteriodGroup.add(asteriod, true)
-            this.asteriodArray.push(asteriod)
+            this.asteriodGroup.add(asteriod, true);
+            this.asteriodArray.push(asteriod);
         }
 
         this.anims.create({
@@ -169,11 +169,11 @@ class TwoPlayerScene extends Phaser.Scene {
         const player2Speed = this.player2SpeedBoost || gameSettings.playerSpeed;   
         // player1 movements
        if(this.cursors.left.isDown){
-            this.player1.setAngularVelocity(-300)
+            this.player1.setAngularVelocity(-300);
         } else if (this.cursors.right.isDown){
-            this.player1.setAngularVelocity(300)
+            this.player1.setAngularVelocity(300);
         } else {
-            this.player1.setAngularVelocity(0)
+            this.player1.setAngularVelocity(0);
         }
 
         if (this.cursors.up.isDown) {
@@ -195,10 +195,10 @@ class TwoPlayerScene extends Phaser.Scene {
 
         // player1 shooting
         if(this.cursors.space.isDown) {
-            const shoot = this.player1BeamGroup.get()
+            const shoot = this.player1BeamGroup.get();
             if (shoot) {
-                shoot.fire(this.player1.x, this.player1.y, this.player1.rotation)
-                this.sound.play("audio_beam")
+                shoot.fire(this.player1.x, this.player1.y, this.player1.rotation);
+                this.sound.play("audio_beam");
             }
         }
 
@@ -212,8 +212,8 @@ class TwoPlayerScene extends Phaser.Scene {
         }
 
         // Update scores 
-        this.player1ScoreText.setText("PLAYER1 SCORE: " + this.player1Score)
-        this.player2ScoreText.setText("PLAYER2 SCORE: " + this.player2Score)
+        this.player1ScoreText.setText("PLAYER1 SCORE: " + this.player1Score);
+        this.player2ScoreText.setText("PLAYER2 SCORE: " + this.player2Score);
 
         // Adjust score labels based on scores
         if (this.player1Score >= this.player2Score) {
@@ -231,7 +231,7 @@ class TwoPlayerScene extends Phaser.Scene {
     }
 
     addThrust(player) {
-        const angle = player.rotation - Math.PI / 2; // Convert angle to radians
+        const angle = player.rotation - Math.PI / 2; 
 
         const thrust = 5; 
         const velocityX = Math.cos(angle) * thrust;
@@ -241,9 +241,9 @@ class TwoPlayerScene extends Phaser.Scene {
     }
 
     collisionPlayer1(beam, asteriod) {
-        beam.destroy()
-        asteriod.destroy()
-        this.player1Score += 15
+        beam.destroy();
+        asteriod.destroy();
+        this.player1Score += 15;
 
         new Explosion(this, asteriod.x, asteriod.y); 
         this.sound.play("audio_explosion")
@@ -254,15 +254,15 @@ class TwoPlayerScene extends Phaser.Scene {
     }
 
     collisionPlayer2(beam, asteriod) {
-        beam.destroy()
-        asteriod.destroy()
-        this.player2Score += 15
+        beam.destroy();
+        asteriod.destroy();
+        this.player2Score += 15;
 
         new Explosion(this, asteriod.x, asteriod.y); 
-        this.sound.play("audio_explosion")
+        this.sound.play("audio_explosion");
 
         if(this.asteriodGroup.countActive() == 0) {
-            this.scene.switch("game-over-scene")
+            this.scene.switch("game-over-scene");
         }
     }
 
