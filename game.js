@@ -1,5 +1,5 @@
 var gameSettings = {
-  playerSpeed: 200,
+  playerSpeed: 150,
   maxPowerups: 2,
   powerUpVel: 50,
 }

@@ -9,8 +9,8 @@ class TwoPlayerScene extends Phaser.Scene {
 
     create() {
 
-        this.background = this.add.tileSprite(0, 0, config.width, config.height, "starbackground");
-        this.background.setOrigin(0, 0);
+        //this.background = this.add.tileSprite(0, 0, config.width, config.height, "starbackground");
+        //this.background.setOrigin(0, 0);
         this.pickupSound = this.sound.add("audio_pickup");
         this.music = this.sound.add("music");
         
@@ -49,12 +49,12 @@ class TwoPlayerScene extends Phaser.Scene {
         this.player2Score = 0
 
         this.player1 = this.physics.add.image(200, 200, "player")
-        this.player1.setDrag(2)
+        this.player1.setDrag(10)
         this.player1.setMaxVelocity(150)
         this.player1.setCollideWorldBounds(true)
 
         this.player2 = this.physics.add.image(250, 250, "player")
-        this.player2.setDrag(2)
+        this.player2.setDrag(10)
         this.player2.setMaxVelocity(150)
         this.player2.setCollideWorldBounds(true)
 
@@ -94,13 +94,13 @@ class TwoPlayerScene extends Phaser.Scene {
 
         this.player1BeamGroup = this.physics.add.group({
             classType: Beam2,
-            maxSize: 1,
+            maxSize: 2,
             runChildUpdate: true
         })
 
         this.player2BeamGroup = this.physics.add.group({
             classType: Beam2,
-            maxSize: 1,
+            maxSize: 2,
             runChildUpdate: true
         })
 
@@ -116,6 +116,9 @@ class TwoPlayerScene extends Phaser.Scene {
 
         this.physics.add.overlap(this.player1BeamGroup, this.asteriodGroup, this.collisionPlayer1, null, this);
         this.physics.add.overlap(this.player2BeamGroup, this.asteriodGroup, this.collisionPlayer2, null, this);
+
+        this.physics.add.overlap(this.player1, this.asteriodGroup, this.hurtPlayer, null, this);
+        this.physics.add.overlap(this.player2, this.asteriodGroup, this.hurtPlayer, null, this);
 
         this.player1ScoreText = this.add.bitmapText(10, 5, "pixelFont", "PLAYER1 SCORE: 0000", 16);
         this.player2ScoreText = this.add.bitmapText(10, 20, "pixelFont", "PLAYER1 SCORE: 0000", 16);
@@ -161,7 +164,7 @@ class TwoPlayerScene extends Phaser.Scene {
         }
     }
     update(time, delta) {
-        this.background.tilePositionY -= 0.5;
+        //this.background.tilePositionY -= 0.5;
         const player1Speed = this.player1SpeedBoost || gameSettings.playerSpeed;
         const player2Speed = this.player2SpeedBoost || gameSettings.playerSpeed;   
         // player1 movements
@@ -262,6 +265,38 @@ class TwoPlayerScene extends Phaser.Scene {
             this.scene.switch("game-over-scene")
         }
     }
+
+    hurtPlayer(player, asteroid) {
+        new Explosion(this, player.x, player.y);
+        this.sound.play("audio_explosion");
+    
+        player.disableBody(true, true); // Temporarily disable the player
+    
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => this.resetPlayer(player),
+            callbackScope: this,
+        });
+    
+        this.resetShipPos(asteroid);
+    }
+    
+    resetPlayer(player) {
+        player.enableBody(true, config.width / 2, config.height - 64, true, true);
+        player.alpha = 0.5;
+    
+        this.tweens.add({
+            targets: player,
+            alpha: 1,
+            duration: 1500,
+        });
+    }
+    
+    resetShipPos(ship) {
+        ship.setPosition(Phaser.Math.Between(0, config.width), 0);
+    }
+    
+
 
 }
 
